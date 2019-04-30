@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Student implements Comparable {
 	
 	String firstName,lastName, ethnicity, highColor, section;
-	int id;
+	int id, test;
 	char gender;
 	int blueScore, greenScore, redScore, yellowScore;
 	
