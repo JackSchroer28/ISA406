@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Student implements Comparable {
 	
 	String firstName,lastName, ethnicity, highColor, section;
-	int id, test;
+	int id;
 	char gender;
 	int blueScore, greenScore, redScore, yellowScore;
 	
@@ -38,6 +38,10 @@ public class Student implements Comparable {
 	}
 
 	//Constructors
+	public Student() {
+		
+	}
+	
 	public Student(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -56,6 +60,19 @@ public class Student implements Comparable {
 		this.yellowScore = yellow;
 		this.highColor = this.getHighColor();
 		this.section = section;
+	}
+	
+	public Student(Student s) {
+		this.id = s.id;
+		this.lastName = s.lastName;
+		this.firstName = s.firstName;
+		this.gender = s.gender;
+		this.blueScore = s.blueScore;
+		this.greenScore = s.greenScore;
+		this.redScore = s.redScore;
+		this.yellowScore = s.yellowScore;
+		this.highColor = s.getHighColor();
+		this.section = s.section;
 	}
 
 	public String getSection() {
