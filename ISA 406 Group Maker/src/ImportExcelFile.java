@@ -835,6 +835,7 @@ public class ImportExcelFile {
 	}
 	
 	public static void main(String[] args) {
+		//import data from computer
 		importData();
 		System.out.println("Size of array: " + studentList.size() + " students.");
 
