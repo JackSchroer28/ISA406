@@ -1,5 +1,11 @@
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
@@ -39,11 +45,10 @@ public class ImportExcelFile {
 
 			while ((line = bReader.readLine()) != null) {
 				String array[] = line.split("\t");
-				char c = array[3].charAt(0);
 				studentList.add(new Student(Integer.parseInt(array[0]), // id
 						array[1], // first name
 						array[2], // last name
-						c, // gender
+						array[3], // gender
 						Integer.parseInt(array[4]), // blue score
 						Integer.parseInt(array[5]), // green score
 						Integer.parseInt(array[6]), // red score
@@ -810,16 +815,21 @@ public class ImportExcelFile {
 	}
 
 	public static void mergeSections() {
+		int groupNum = 5;
 		for(int i = 0;i<sectA.size();i++) {
+			sectA.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectA.get(i));
 		}
 		for(int i = 0;i<sectB.size();i++) {
+			sectB.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectB.get(i));
 		}
 		for(int i = 0;i<sectC.size();i++) {
+			sectC.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectC.get(i));
 		}
 		for(int i = 0;i<sectD.size();i++) {
+			sectD.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectD.get(i));
 		}	
 	}
@@ -834,7 +844,69 @@ public class ImportExcelFile {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void exportData() throws IOException {
+		
+		String[] columns = {
+				"id", "Group #","First Name", "Last Name", "Gender", 
+				"Blue Score", "Green Score", "Red Score", 
+				"Yellow Score", "Section" };
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Student");
+		
+		//create font for styling header cells
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short) 14);
+		headerFont.setColor(IndexedColors.RED.getIndex());
+		
+		//create cellstyle with the font
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		
+		//create a row
+		Row headerRow = sheet.createRow(0);
+		
+		//create cells
+		for(int i=0;i<columns.length;i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(columns[i]);
+		}
+		
+		//create remaining rows and fill w data
+		int rowNum = 1;
+		for(Student s : studentList) {
+			Row row = sheet.createRow(rowNum++);
+			
+			row.createCell(0).setCellValue(s.getId());
+			row.createCell(1).setCellValue(s.getGroup());
+			row.createCell(2).setCellValue(s.getFirstName());
+			row.createCell(3).setCellValue(s.getLastName());
+			row.createCell(4).setCellValue(s.getGender());
+			row.createCell(5).setCellValue(s.getBlueScore());
+			row.createCell(6).setCellValue(s.getGreenScore());
+			row.createCell(7).setCellValue(s.getRedScore());
+			row.createCell(8).setCellValue(s.getYellowScore());
+			row.createCell(9).setCellValue(s.getSection());
+		}
+		
+		//reseize columns to fit content size
+		for(int i=0;i<columns.length;i++) {
+			sheet.autoSizeColumn(i);
+		}
+		
+		//write output to file
+		
+		FileOutputStream fileOut = new FileOutputStream("output.xlsx");
+		workbook.write(fileOut);
+		fileOut.close();
+		
+		//close workbook
+		workbook.close();
+		
+		
+	}
+	
+	public static void main(String[] args) throws IOException {
 		//import data from computer
 		importData();
 		System.out.println("Size of array: " + studentList.size() + " students.");
@@ -861,8 +933,8 @@ public class ImportExcelFile {
 			System.out.println(stu.toString());
 		}
 		sectCSort();
-		System.out.println("Section B sorted: ");
-		for (Student stu : sectB) {
+		System.out.println("Section C sorted: ");
+		for (Student stu : sectC) {
 			System.out.println(stu.toString());
 		}
 		sectDSort();
@@ -874,5 +946,6 @@ public class ImportExcelFile {
 		System.out.println("------------------------------------------------------------------------------------------");
 		mergeSections();
 		displayTeams();
+		exportData();
 	}
 }

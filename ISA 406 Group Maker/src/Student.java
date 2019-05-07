@@ -2,12 +2,9 @@ import java.util.ArrayList;
 
 public class Student implements Comparable {
 	
-	String firstName,lastName, ethnicity, highColor, section;
-	int id;
-	char gender;
+	String firstName,lastName, ethnicity, highColor, section, gender;
+	int id, group;
 	int blueScore, greenScore, redScore, yellowScore;
-	
-	
 	
 	void insertScores(int blue, int green, int red, int yellow) {
 		this.blueScore = blue;
@@ -32,9 +29,10 @@ public class Student implements Comparable {
 	
 	@Override
 	public String toString() {
-		return "Student [firstName=" + firstName + ", lastName=" + lastName + ", section=" + section
-				+ ", highColor=" + highColor + ", id=" + id + ", gender=" + gender + ", blueScore=" + blueScore
-				+ ", greenScore=" + greenScore + ", redScore=" + redScore + ", yellowScore=" + yellowScore + "]";
+		return "Student [firstName=" + firstName + ", lastName=" + lastName + ", ethnicity=" + ethnicity
+				+ ", highColor=" + highColor + ", section=" + section + ", gender=" + gender + ", id=" + id + ", group="
+				+ group + ", blueScore=" + blueScore + ", greenScore=" + greenScore + ", redScore=" + redScore
+				+ ", yellowScore=" + yellowScore + "]";
 	}
 
 	//Constructors
@@ -49,7 +47,7 @@ public class Student implements Comparable {
 	
 	
 	//constructor for input
-	public Student(int id, String lastName, String firstName, char gender, int blue, int green, int red, int yellow, String section) {
+	public Student(int id, String lastName, String firstName, String gender, int blue, int green, int red, int yellow, String section) {
 		this.id = id;
 		this.lastName = lastName;
 		this.firstName = firstName;
@@ -86,5 +84,89 @@ public class Student implements Comparable {
 	public int compareTo(Object o) {
         return this.getSection().compareTo(((Student) o).getSection());
    }
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEthnicity() {
+		return ethnicity;
+	}
+
+	public void setEthnicity(String ethnicity) {
+		this.ethnicity = ethnicity;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public int getBlueScore() {
+		return blueScore;
+	}
+
+	public void setBlueScore(int blueScore) {
+		this.blueScore = blueScore;
+	}
+
+	public int getGreenScore() {
+		return greenScore;
+	}
+
+	public void setGreenScore(int greenScore) {
+		this.greenScore = greenScore;
+	}
+
+	public int getRedScore() {
+		return redScore;
+	}
+	
+	public void setRedScore(int redScore) {
+		this.redScore = redScore;
+	}
+
+	public int getYellowScore() {
+		return yellowScore;
+	}
+
+	public void setYellowScore(int yellowScore) {
+		this.yellowScore = yellowScore;
+	}
+
+	public void setHighColor(String highColor) {
+		this.highColor = highColor;
+	}
+
+	public int getGroup() {
+		return group;
+	}
+
+	public void setGroup(int group) {
+		this.group = group;
+	}
 	
 }
