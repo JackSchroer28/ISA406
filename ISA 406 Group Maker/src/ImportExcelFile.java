@@ -1,14 +1,12 @@
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.Iterator;
 
 public class ImportExcelFile {
 
@@ -26,40 +24,48 @@ public class ImportExcelFile {
 	static int high = 0;
 	static int index = 0;
 
-	public static void importData() {
-		// Import scanner
-		@SuppressWarnings("resource")
-		Scanner scan = new Scanner(System.in);
+	public static void importData() throws EncryptedDocumentException, IOException {
+		final String FILE_PATH = "/home/jack/Downloads/isa406_data/mockdata.xlsx";
+		Workbook wb = WorkbookFactory.create(new File(FILE_PATH));
 
-		// Prompt user to enter location of file
-		// System.out.println("Enter file location:");
-		// String file = scan.nextLine();
-		String file = "/home/jack/Desktop/mockdata2.txt";
+		// get sheet from workbook
+		Sheet sheet = wb.getSheetAt(0);
 
-		try {
-			@SuppressWarnings("resource")
-			BufferedReader bReader = new BufferedReader(new FileReader(file));
+		// iterate over rows and columns of sheet
+		Iterator<Row> rowIterator = sheet.rowIterator();
 
-			String line;
-			bReader.readLine(); // to make sure first line isn't read
+		// skip row one because it is the header
+		rowIterator.next();
 
-			while ((line = bReader.readLine()) != null) {
-				String array[] = line.split("\t");
-				studentList.add(new Student(Integer.parseInt(array[0]), // id
-						array[1], // first name
-						array[2], // last name
-						array[3], // gender
-						Integer.parseInt(array[4]), // blue score
-						Integer.parseInt(array[5]), // green score
-						Integer.parseInt(array[6]), // red score
-						Integer.parseInt(array[7]), // yellow score
-						array[8]));
-			}
-			// Throw exception error if file is not found
-		} catch (Exception e) {
-			System.out.println("Error: file not found");
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.next();
+			Student stu = new Student();
+			// iterate over columns of curr row
+			Iterator<Cell> cellIterator = row.cellIterator();
+			Cell cell = cellIterator.next();
 
+			stu.setId((int) cell.getNumericCellValue());
+			cell = cellIterator.next();
+			stu.setFirstName(cell.getStringCellValue());
+			cell = cellIterator.next();
+			stu.setLastName(cell.getStringCellValue());
+			cell = cellIterator.next();
+			stu.setGender(cell.getStringCellValue());
+			cell = cellIterator.next();
+			stu.setBlueScore((int) cell.getNumericCellValue());
+			cell = cellIterator.next();
+			stu.setGreenScore((int) cell.getNumericCellValue());
+			cell = cellIterator.next();
+			stu.setRedScore((int) cell.getNumericCellValue());
+			cell = cellIterator.next();
+			stu.setYellowScore((int) cell.getNumericCellValue());
+			cell = cellIterator.next();
+			stu.setSection(cell.getStringCellValue());
+			stu.setHighColor(stu.getHighColor());
+
+			studentList.add(stu);
 		}
+		wb.close();
 	}
 
 	public static void sortBySection() {
@@ -250,40 +256,40 @@ public class ImportExcelFile {
 		// add remaining to blue
 		highBlue.add(sectA.get(0));
 		sectA.remove(0);
-		
+
 		// ================================== put students back so they are balanced
 		sectA.add(highBlue.get(0));
 		sectA.add(highGreen.get(1));
 		sectA.add(highRed.get(2));
 		sectA.add(highYellow.get(3));
 		sectA.add(highYellow.get(4));
-		
+
 		sectA.add(highYellow.get(0));
 		sectA.add(highBlue.get(1));
 		sectA.add(highGreen.get(2));
 		sectA.add(highRed.get(3));
 		sectA.add(highRed.get(4));
-		
+
 		sectA.add(highRed.get(0));
 		sectA.add(highYellow.get(1));
 		sectA.add(highBlue.get(2));
 		sectA.add(highGreen.get(3));
 		sectA.add(highGreen.get(4));
-		
+
 		sectA.add(highGreen.get(0));
 		sectA.add(highRed.get(1));
 		sectA.add(highYellow.get(2));
 		sectA.add(highBlue.get(3));
 		sectA.add(highBlue.get(4));
-		
+
 		// ==================================== empty high color arrays
 		highBlue.clear();
 		highGreen.clear();
 		highRed.clear();
 		highYellow.clear();
-		
+
 	}
-	
+
 	public static void sectBSort() {
 		// add highest scores to colors, if that is the student's highest color
 		for (int j = 0; j < 10; j++) {
@@ -410,45 +416,45 @@ public class ImportExcelFile {
 			highYellow.add(sectB.get(index));
 			sectB.remove(index);
 		}
-		
+
 		// ==================================================== flex groups
 		f1 = new Student(sectB.get(0));
 		f2 = new Student(sectB.get(1));
 		sectB.clear();
-		
+
 		int higher = f1.greenScore + f1.yellowScore, var = 0;
-		if((f2.greenScore + f2.yellowScore) >= higher) {
+		if ((f2.greenScore + f2.yellowScore) >= higher) {
 			sectB.add(f2);
 			var++;
 		} else {
 			sectB.add(f1);
 		}
-		
+
 		// ================================== put students back so they are balanced
 		sectB.add(highBlue.get(0));
 		sectB.add(highGreen.get(1));
 		sectB.add(highRed.get(0));
 		sectB.add(highYellow.get(1));
-		
-		if(var!=0) {
+
+		if (var != 0) {
 			sectB.add(f1);
 		} else {
 			sectB.add(f2);
 		}
-		
+
 		sectB.add(highBlue.get(1));
 		sectB.add(highGreen.get(0));
 		sectB.add(highRed.get(1));
 		sectB.add(highYellow.get(0));
-		
+
 		// ==================================== empty high color arrays
 		highBlue.clear();
 		highGreen.clear();
 		highRed.clear();
 		highYellow.clear();
-		
+
 	}
-	
+
 	public static void sectCSort() {
 		// add highest scores to colors, if that is the student's highest color
 		for (int j = 0; j < 10; j++) {
@@ -575,45 +581,45 @@ public class ImportExcelFile {
 			highYellow.add(sectC.get(index));
 			sectC.remove(index);
 		}
-		
+
 		// ==================================================== flex groups
 		f1 = new Student(sectC.get(0));
 		f2 = new Student(sectC.get(1));
 		sectC.clear();
-		
+
 		int higher = f1.greenScore + f1.yellowScore, var = 0;
-		if((f2.greenScore + f2.yellowScore) >= higher) {
+		if ((f2.greenScore + f2.yellowScore) >= higher) {
 			sectC.add(f2);
 			var++;
 		} else {
 			sectC.add(f1);
 		}
-		
+
 		// ================================== put students back so they are balanced
 		sectC.add(highBlue.get(0));
 		sectC.add(highGreen.get(1));
 		sectC.add(highRed.get(0));
 		sectC.add(highYellow.get(1));
-		
-		if(var!=0) {
+
+		if (var != 0) {
 			sectC.add(f1);
 		} else {
 			sectC.add(f2);
 		}
-		
+
 		sectC.add(highBlue.get(1));
 		sectC.add(highGreen.get(0));
 		sectC.add(highRed.get(1));
 		sectC.add(highYellow.get(0));
-		
+
 		// ==================================== empty high color arrays
 		highBlue.clear();
 		highGreen.clear();
 		highRed.clear();
 		highYellow.clear();
-		
+
 	}
-	
+
 	public static void sectDSort() {
 		// add highest scores to colors, if that is the student's highest color
 		for (int j = 0; j < 10; j++) {
@@ -780,103 +786,101 @@ public class ImportExcelFile {
 		// add remaining to blue
 		highBlue.add(sectD.get(0));
 		sectD.remove(0);
-		
+
 		// ================================== put students back so they are balanced
 		sectD.add(highBlue.get(0));
 		sectD.add(highGreen.get(1));
 		sectD.add(highRed.get(2));
 		sectD.add(highYellow.get(3));
 		sectD.add(highYellow.get(4));
-		
+
 		sectD.add(highYellow.get(0));
 		sectD.add(highBlue.get(1));
 		sectD.add(highGreen.get(2));
 		sectD.add(highRed.get(3));
 		sectD.add(highRed.get(4));
-		
+
 		sectD.add(highRed.get(0));
 		sectD.add(highYellow.get(1));
 		sectD.add(highBlue.get(2));
 		sectD.add(highGreen.get(3));
 		sectD.add(highGreen.get(4));
-		
+
 		sectD.add(highGreen.get(0));
 		sectD.add(highRed.get(1));
 		sectD.add(highYellow.get(2));
 		sectD.add(highBlue.get(3));
 		sectD.add(highBlue.get(4));
-		
+
 		// ==================================== empty high color arrays
 		highBlue.clear();
 		highGreen.clear();
 		highRed.clear();
 		highYellow.clear();
-		
+
 	}
 
 	public static void mergeSections() {
 		int groupNum = 5;
-		for(int i = 0;i<sectA.size();i++) {
+		for (int i = 0; i < sectA.size(); i++) {
 			sectA.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectA.get(i));
 		}
-		for(int i = 0;i<sectB.size();i++) {
+		for (int i = 0; i < sectB.size(); i++) {
 			sectB.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectB.get(i));
 		}
-		for(int i = 0;i<sectC.size();i++) {
+		for (int i = 0; i < sectC.size(); i++) {
 			sectC.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectC.get(i));
 		}
-		for(int i = 0;i<sectD.size();i++) {
+		for (int i = 0; i < sectD.size(); i++) {
 			sectD.get(i).setGroup(groupNum++ / 5);
 			studentList.add(sectD.get(i));
-		}	
+		}
 	}
-	
+
 	public static void displayTeams() {
 		int count = 0;
-		for(int i = 0;i<studentList.size();i++) {
+		for (int i = 0; i < studentList.size(); i++) {
 			System.out.println(studentList.get(i).toString());
 			count++;
-			if(count%5 == 0) 
+			if (count % 5 == 0)
 				System.out.println();
 		}
 	}
-	
+
 	public static void exportData() throws IOException {
-		
-		String[] columns = {
-				"id", "Group #","First Name", "Last Name", "Gender", 
-				"Blue Score", "Green Score", "Red Score", 
-				"Yellow Score", "Section" };
+
+		String[] columns = { "id", "Group #", "First Name", "Last Name", "Gender", "Blue Score", "Green Score",
+				"Red Score", "Yellow Score", "Section" };
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet("Student");
-		
-		//create font for styling header cells
+
+		// create font for styling header cells
 		Font headerFont = workbook.createFont();
 		headerFont.setBold(true);
 		headerFont.setFontHeightInPoints((short) 14);
 		headerFont.setColor(IndexedColors.RED.getIndex());
-		
-		//create cellstyle with the font
+
+		// create cellstyle with the font
 		CellStyle headerCellStyle = workbook.createCellStyle();
 		headerCellStyle.setFont(headerFont);
-		
-		//create a row
+
+		// create a row
 		Row headerRow = sheet.createRow(0);
-		
-		//create cells
-		for(int i=0;i<columns.length;i++) {
+
+		// create cells
+		for (int i = 0; i < columns.length; i++) {
 			Cell cell = headerRow.createCell(i);
 			cell.setCellValue(columns[i]);
 		}
-		
-		//create remaining rows and fill w data
+
+		// create remaining rows and fill w data
 		int rowNum = 1;
-		for(Student s : studentList) {
+		for (Student s : studentList) {
 			Row row = sheet.createRow(rowNum++);
-			
+
 			row.createCell(0).setCellValue(s.getId());
 			row.createCell(1).setCellValue(s.getGroup());
 			row.createCell(2).setCellValue(s.getFirstName());
@@ -888,64 +892,47 @@ public class ImportExcelFile {
 			row.createCell(8).setCellValue(s.getYellowScore());
 			row.createCell(9).setCellValue(s.getSection());
 		}
-		
-		//reseize columns to fit content size
-		for(int i=0;i<columns.length;i++) {
+
+		// reseize columns to fit content size
+		for (int i = 0; i < columns.length; i++) {
 			sheet.autoSizeColumn(i);
 		}
-		
-		//write output to file
-		
+
+		// write output to file
+
 		FileOutputStream fileOut = new FileOutputStream("output.xlsx");
 		workbook.write(fileOut);
 		fileOut.close();
-		
-		//close workbook
+
+		// close workbook
 		workbook.close();
-		
-		
+
 	}
-	
+
 	public static void main(String[] args) throws IOException {
-		//import data from computer
+		System.out.println("Importing Data...");
 		importData();
-		System.out.println("Size of array: " + studentList.size() + " students.");
 
 		System.out.println("Sorting by section...");
 		sortBySection();
 
-		System.out.println("Section A size: " + sectA.size());
-		System.out.println("Section B size: " + sectB.size());
-		System.out.println("Section C size: " + sectC.size());
-		System.out.println("Section D size: " + sectD.size());
-		System.out.println("Size of array after grouping: " + studentList.size() + " students.");
-		
-		//sort each section
-		System.out.println("------------------------------------------------------------------------------------------");
+		System.out.println("Sorting section A...");
 		sectASort();
-		System.out.println("Section A sorted: ");
-		for (Student stu : sectA) {
-			System.out.println(stu.toString());
-		}
+
+		System.out.println("Sorting section B...");
 		sectBSort();
-		System.out.println("Section B sorted: ");
-		for (Student stu : sectB) {
-			System.out.println(stu.toString());
-		}
+
+		System.out.println("Sorting section C...");
 		sectCSort();
-		System.out.println("Section C sorted: ");
-		for (Student stu : sectC) {
-			System.out.println(stu.toString());
-		}
+
+		System.out.println("Sorting section D...");
 		sectDSort();
-		System.out.println("Section D sorted: ");
-		for (Student stu : sectD) {
-			System.out.println(stu.toString());
-		}
-		System.out.println();
-		System.out.println("------------------------------------------------------------------------------------------");
+
+		System.out.println("Merging sorted sections back to main list...");
 		mergeSections();
-		displayTeams();
+
+		System.out.println("Exporting list to excel doc...");
 		exportData();
+
 	}
 }
