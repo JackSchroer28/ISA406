@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
+
 public class ImportExcelFile {
 
 	static Student f1 = new Student();
@@ -25,8 +28,24 @@ public class ImportExcelFile {
 	static int index = 0;
 
 	public static void importData() throws EncryptedDocumentException, IOException {
-		final String FILE_PATH = "/home/jack/Downloads/isa406_data/mockdata.xlsx";
-		Workbook wb = WorkbookFactory.create(new File(FILE_PATH));
+		
+		String file = null;
+		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		
+		int returnValue = jfc.showOpenDialog(null);
+		
+		if(returnValue==JFileChooser.APPROVE_OPTION) {
+			File selectedFile = jfc.getSelectedFile();
+			file = selectedFile.getAbsolutePath();
+		}
+		Workbook wb = null;
+		try {
+			wb = WorkbookFactory.create(new File(file));
+		} catch (Exception e) {
+			System.out.println("Error : cannot read that file. Please select a valid file.");
+			System.exit(1);
+		}
+		
 
 		// get sheet from workbook
 		Sheet sheet = wb.getSheetAt(0);
